@@ -41,3 +41,4 @@ app.delete('/api/products/:productID', (req, res) => {
 app.listen(port, () => {
     console.log(`API REST ejecutándose en http://localhost:${port}/api/products`);
 });
+
