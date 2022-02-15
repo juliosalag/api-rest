@@ -14,26 +14,50 @@ app.use(express.json()); // Body que contenga un objeto JSON
 
 // SELECT //
 app.get('/api/products', (req, res) => {
-    res.status(200).send({ products: [] });
+    res.status(200).send({ products: [{}, {}, {}] });
 });
 app.get(`/api/products/:productID`, (req, res) => {
-    res.status(200).send({products: `${req.params.productID}`});
+    const ID = req.params.productID;
+
+    res.status(200).send(
+        {
+            _id: `${ID}`,
+            name: `Mesa de oficina`
+        }
+    );
 });
 
 // INSERT //
 app.post(`/api/products`, (req, res) => {
-    console.log(req.body);
-    res.status(200).send({products: `El producto se ha recibido`});
+    const miProducto = req.body;
+
+    console.log(miProducto);
+    res.status(200).send({result: `OK`, product: miProducto});
 });
 
 // UPDATE //
 app.put('/api/products/:productID', (req, res) => { 
-    res.status(200).send({products: `${req.params.productID}`}); 
+    const ID = req.params.productID;
+    const miProducto = req.body;
+
+    res.status(200).send(
+        {
+            _id: `${ID}`,
+            name: miProducto
+        }
+    ); 
 });
 
 // DELETE //
 app.delete('/api/products/:productID', (req, res) => { 
-    res.status(200).send({products: `${req.params.productID}`}); 
+    const ID = req.params.productID;
+
+    res.status(200).send(
+        {
+            result: `OK`,
+            product: `${ID}`
+        }
+    ); 
 }); 
 
 // Lanzar el sevicio API
