@@ -1,7 +1,6 @@
 'use strict'
 const port = process.env.PORT || 3000;
 const express = require('express');
-const res = require('express/lib/response');
 const logger = require('morgan');
 
 const app = express();
