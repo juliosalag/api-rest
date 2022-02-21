@@ -1,4 +1,5 @@
 'use strict'
+
 const port = process.env.PORT || 3000;
 const express = require('express');
 const logger = require('morgan');
@@ -19,12 +20,10 @@ app.get('/api/products', (req, res) => {
 app.get(`/api/products/:productID`, (req, res) => {
     const ID = req.params.productID;
 
-    res.status(200).send(
-        {
-            _id: `${ID}`,
-            name: `Mesa de oficina`
-        }
-    );
+    res.status(200).send({
+        _id: `${ID}`,
+        name: `Mesa de oficina`
+    });
 });
 
 // INSERT //
@@ -32,36 +31,34 @@ app.post(`/api/products`, (req, res) => {
     const miProducto = req.body;
 
     console.log(miProducto);
-    res.status(200).send({result: `OK`, product: miProducto});
+    res.status(200).send({
+        result: `OK`,
+        product: miProducto
+    });
 });
 
 // UPDATE //
-app.put('/api/products/:productID', (req, res) => { 
+app.put('/api/products/:productID', (req, res) => {
     const ID = req.params.productID;
     const miProducto = req.body;
 
-    res.status(200).send(
-        {
-            _id: `${ID}`,
-            name: miProducto
-        }
-    ); 
+    res.status(200).send({
+        _id: `${ID}`,
+        name: miProducto
+    });
 });
 
 // DELETE //
-app.delete('/api/products/:productID', (req, res) => { 
+app.delete('/api/products/:productID', (req, res) => {
     const ID = req.params.productID;
 
-    res.status(200).send(
-        {
-            result: `OK`,
-            product: `${ID}`
-        }
-    ); 
-}); 
+    res.status(200).send({
+        result: `OK`,
+        product: `${ID}`
+    });
+});
 
 // Lanzar el sevicio API
 app.listen(port, () => {
-    console.log(`API REST ejecutándose en http://localhost:${port}/api/products`);
+    console.log(`API REST CRUD ejecutándose en http://localhost:${port}/api/products`);
 });
-
