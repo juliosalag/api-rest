@@ -11,16 +11,15 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:3000/api/products/1234546",
-					"protocol": "https",
+					"raw": "http://localhost:3000/api/products",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3000",
 					"path": [
 						"api",
-						"products",
-						"1234546"
+						"products"
 					]
 				}
 			},
@@ -32,8 +31,8 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:3000/api/products/1234546",
-					"protocol": "https",
+					"raw": "http://localhost:3000/api/products/1234546",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
@@ -62,8 +61,8 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:3000/api/products",
-					"protocol": "https",
+					"raw": "http://localhost:3000/api/products",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
@@ -91,8 +90,8 @@
 					}
 				},
 				"url": {
-					"raw": "https://localhost:3000/api/products/123456",
-					"protocol": "https",
+					"raw": "http://localhost:3000/api/products/123456",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
@@ -112,8 +111,8 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "https://localhost:3000/api/products/123456",
-					"protocol": "https",
+					"raw": "http://localhost:3000/api/products/123456",
+					"protocol": "http",
 					"host": [
 						"localhost"
 					],
