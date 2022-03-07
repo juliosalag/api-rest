@@ -25,7 +25,9 @@
     },
     "homepage": "https://github.com/juliosalag/practica1#readme",
     "dependencies": {
+        "cors": "^2.8.5",
         "express": "^4.17.2",
+        "helmet": "^5.0.2",
         "mongodb": "^4.4.0",
         "mongojs": "^3.1.0",
         "morgan": "^1.10.0"

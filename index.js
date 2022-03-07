@@ -12,6 +12,21 @@ var db = mongojs("SD"); // Enlazamos con la DB "SD"
 // var db = mongojs('username:password@example.com/SD);
 var id = mongojs.ObjectId;
 
+var fs = require('fs');
+var https = require('https');
+
+var helmet = require('helmet');
+
+const PORT = 443;
+
+https.createServer({
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+        // Lanzar el sevicio API
+}, app).listen(port, () => {
+    console.log(`API REST ejecutándose en http://localhost:${port}/api/:coleccion/:id`);
+});
+
 // Declaramos los middleware
 var allowMethods = (req, res, next) => {
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -34,6 +49,8 @@ app.use(express.urlencoded({ extended: false })); // Body tipico
 app.use(express.json()); // Body que contenga un objeto JSON
 app.use(allowMethods);
 app.use(allowCrossTokenHeader);
+
+app.use(helmet());
 
 // Trigger previo a las rutas para dar soporte a multiples colecciones
 app.param("coleccion", (req, res, next, coleccion) => {
@@ -107,9 +124,4 @@ app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
         if (err) return next(err);
         res.json(resultado);
     })
-});
-
-// Lanzar el sevicio API
-app.listen(port, () => {
-    console.log(`API REST ejecutándose en http://localhost:${port}/api/:coleccion/:id`);
 });
