@@ -2,6 +2,16 @@
 
 const port = process.env.PORT || 3000;
 
+// Seguridad
+
+const https = require('https');
+const fs = require('fs');
+
+const OPTIONS_HTTPS = {
+    key: fs.readFileSync('./cert/key.pem'),
+    cert: fs.readFileSync('./cert/cert.pem')
+};
+
 const express = require('express');
 const logger = require('morgan');
 const mongojs = require('mongojs');
@@ -9,30 +19,32 @@ const mongojs = require('mongojs');
 const app = express();
 
 var db = mongojs("SD"); // Enlazamos con la DB "SD"
-// var db = mongojs('username:password@example.com/SD);
 var id = mongojs.ObjectId;
 
-var fs = require('fs');
-var https = require('https');
-
-var helmet = require('helmet');
-
-const PORT = 443;
-
-https.createServer({
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-        // Lanzar el sevicio API
-}, app).listen(port, () => {
-    console.log(`API REST ejecutándose en http://localhost:${port}/api/:coleccion/:id`);
-});
-
 // Declaramos los middleware
+var allowMethods = (req, res, next) => {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    return next();
+};
+var allowCrossTokenHeader = (req, res, next) => {
+    res.header("Access-Control-Allow-Headers", "token");
+    return next();
+}
+var auth = (req, res, next) => {
+    if(req.header.token === "password1234"){
+        return next();
+    }
+    else{
+        return next(new Error("No autorizado"));
+    }
+}
+
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false })); // Body tipico
 app.use(express.json()); // Body que contenga un objeto JSON
 
-app.use(helmet());
+app.use(allowMethods);
+app.use(allowCrossTokenHeader);
 
 // Trigger previo a las rutas para dar soporte a multiples colecciones
 app.param("coleccion", (req, res, next, coleccion) => {
@@ -72,7 +84,7 @@ app.get('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Creamos un nuevo elemento en la tabla {coleccion}
-app.post(`/api/:coleccion`, (req, res, next) => {
+app.post(`/api/:coleccion`, auth,(req, res, next) => {
     const elemento = req.body;
 
     if (!elemento.nombre) {
@@ -89,7 +101,7 @@ app.post(`/api/:coleccion`, (req, res, next) => {
 });
 
 // Modificamos el elemento {id} de la tabla {coleccion}
-app.put('/api/:coleccion/:id', (req, res, next) => {
+app.put('/api/:coleccion/:id', auth,(req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
     req.collection.update({ _id: id(elementoId) }, { $set: elementoNuevo }, { safe: true, multi: false }, (err, elementoModif) => {
@@ -99,11 +111,15 @@ app.put('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Eliminamos el elemento {id} de la tabla {coleccion}
-app.delete('/api/:coleccion/:id', (req, res, next) => {
+app.delete('/api/:coleccion/:id', auth,(req, res, next) => {
     let elementoId = req.params.id;
 
     req.collection.remove({ _id: id(elementoId) }, (err, resultado) => {
         if (err) return next(err);
         res.json(resultado);
     })
+});
+
+https.createServer(OPTIONS_HTTPS, app).listen(port, () => {
+    console.log('SEC WS API REST CRUD con DB ejecutandose en https://localhost:${port}/api/:coleccion/:id')
 });
