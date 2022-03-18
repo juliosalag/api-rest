@@ -28,27 +28,9 @@ https.createServer({
 });
 
 // Declaramos los middleware
-var allowMethods = (req, res, next) => {
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    return next();
-};
-var allowCrossTokenHeader = (req, res, next) => {
-    res.header("Access-Control-Allow-Headers", "token");
-    return next();
-};
-var auth = (req, res, next) => {
-    if (req.headers.token === "password1234") {
-        return next();
-    } else {
-        return next(new Error("No autorizado"));
-    }
-};
-
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false })); // Body tipico
 app.use(express.json()); // Body que contenga un objeto JSON
-app.use(allowMethods);
-app.use(allowCrossTokenHeader);
 
 app.use(helmet());
 
@@ -90,7 +72,7 @@ app.get('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Creamos un nuevo elemento en la tabla {coleccion}
-app.post(`/api/:coleccion`, auth, (req, res, next) => {
+app.post(`/api/:coleccion`, (req, res, next) => {
     const elemento = req.body;
 
     if (!elemento.nombre) {
@@ -107,7 +89,7 @@ app.post(`/api/:coleccion`, auth, (req, res, next) => {
 });
 
 // Modificamos el elemento {id} de la tabla {coleccion}
-app.put('/api/:coleccion/:id', auth, (req, res, next) => {
+app.put('/api/:coleccion/:id', (req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
     req.collection.update({ _id: id(elementoId) }, { $set: elementoNuevo }, { safe: true, multi: false }, (err, elementoModif) => {
@@ -117,7 +99,7 @@ app.put('/api/:coleccion/:id', auth, (req, res, next) => {
 });
 
 // Eliminamos el elemento {id} de la tabla {coleccion}
-app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
+app.delete('/api/:coleccion/:id', (req, res, next) => {
     let elementoId = req.params.id;
 
     req.collection.remove({ _id: id(elementoId) }, (err, resultado) => {
