@@ -15,6 +15,7 @@ const OPTIONS_HTTPS = {
 const express = require('express');
 const logger = require('morgan');
 const mongojs = require('mongojs');
+const cors = require('cors');
 
 const app = express();
 
@@ -27,14 +28,17 @@ var allowMethods = (req, res, next) => {
     return next();
 };
 var allowCrossTokenHeader = (req, res, next) => {
-    res.header("Access-Control-Allow-Headers", "token");
+    res.header("Access-Control-Allow-Headers", "*");
+    return next();
+}
+var allowCrossTokenOrigin = (req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
     return next();
 }
 var auth = (req, res, next) => {
-    if(req.header.token === "password1234"){
+    if (req.headers.token === "password1234") {
         return next();
-    }
-    else{
+    } else {
         return next(new Error("No autorizado"));
     }
 }
@@ -42,9 +46,10 @@ var auth = (req, res, next) => {
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false })); // Body tipico
 app.use(express.json()); // Body que contenga un objeto JSON
-
+app.use(cors());
 app.use(allowMethods);
 app.use(allowCrossTokenHeader);
+app.use(allowCrossTokenOrigin);
 
 // Trigger previo a las rutas para dar soporte a multiples colecciones
 app.param("coleccion", (req, res, next, coleccion) => {
@@ -84,7 +89,7 @@ app.get('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Creamos un nuevo elemento en la tabla {coleccion}
-app.post(`/api/:coleccion`, auth,(req, res, next) => {
+app.post(`/api/:coleccion`, auth, (req, res, next) => {
     const elemento = req.body;
 
     if (!elemento.nombre) {
@@ -101,7 +106,7 @@ app.post(`/api/:coleccion`, auth,(req, res, next) => {
 });
 
 // Modificamos el elemento {id} de la tabla {coleccion}
-app.put('/api/:coleccion/:id', auth,(req, res, next) => {
+app.put('/api/:coleccion/:id', auth, (req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
     req.collection.update({ _id: id(elementoId) }, { $set: elementoNuevo }, { safe: true, multi: false }, (err, elementoModif) => {
@@ -111,7 +116,7 @@ app.put('/api/:coleccion/:id', auth,(req, res, next) => {
 });
 
 // Eliminamos el elemento {id} de la tabla {coleccion}
-app.delete('/api/:coleccion/:id', auth,(req, res, next) => {
+app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
     let elementoId = req.params.id;
 
     req.collection.remove({ _id: id(elementoId) }, (err, resultado) => {
@@ -121,5 +126,5 @@ app.delete('/api/:coleccion/:id', auth,(req, res, next) => {
 });
 
 https.createServer(OPTIONS_HTTPS, app).listen(port, () => {
-    console.log('SEC WS API REST CRUD con DB ejecutandose en https://localhost:${port}/api/:coleccion/:id')
+    console.log(`SEC WS API REST CRUD con DB ejecutandose en https://localhost:${port}/api/:coleccion/:id`)
 });
