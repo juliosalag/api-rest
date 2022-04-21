@@ -46,6 +46,7 @@ var auth = (req, res, next) => {
 app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false })); // Body tipico
 app.use(express.json()); // Body que contenga un objeto JSON
+
 app.use(cors());
 app.use(allowMethods);
 app.use(allowCrossTokenHeader);
