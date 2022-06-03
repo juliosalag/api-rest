@@ -90,10 +90,10 @@ app.get('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Creamos un nuevo elemento en la tabla {coleccion}
-app.post(`/api/:coleccion`, auth, (req, res, next) => {
+app.post(`/api/:coleccion`, /*auth,*/ (req, res, next) => {
     const elemento = req.body;
 
-    if (!elemento.nombre) {
+    if (!elemento.title) {
         res.status(400).json({
             error: 'Bad data',
             description: 'Se precisa al menos un campo <nombre>'
@@ -107,7 +107,7 @@ app.post(`/api/:coleccion`, auth, (req, res, next) => {
 });
 
 // Modificamos el elemento {id} de la tabla {coleccion}
-app.put('/api/:coleccion/:id', auth, (req, res, next) => {
+app.put('/api/:coleccion/:id', /*auth,*/ (req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
     req.collection.update({ _id: id(elementoId) }, { $set: elementoNuevo }, { safe: true, multi: false }, (err, elementoModif) => {
@@ -117,7 +117,7 @@ app.put('/api/:coleccion/:id', auth, (req, res, next) => {
 });
 
 // Eliminamos el elemento {id} de la tabla {coleccion}
-app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
+app.delete('/api/:coleccion/:id', /*auth,*/ (req, res, next) => {
     let elementoId = req.params.id;
 
     req.collection.remove({ _id: id(elementoId) }, (err, resultado) => {
@@ -125,6 +125,11 @@ app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
         res.json(resultado);
     })
 });
+/*
+app.listen(port, () => {
+    console.log(`API REST ejecutandose en http://localhost:${port}/api/:coleccion/:id`);
+});
+*/
 
 https.createServer(OPTIONS_HTTPS, app).listen(port, () => {
     console.log(`SEC WS API REST CRUD con DB ejecutandose en https://localhost:${port}/api/:coleccion/:id`)
