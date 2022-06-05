@@ -90,7 +90,7 @@ app.get('/api/:coleccion/:id', (req, res, next) => {
 });
 
 // Creamos un nuevo elemento en la tabla {coleccion}
-app.post(`/api/:coleccion`, /*auth,*/ (req, res, next) => {
+app.post(`/api/:coleccion`, auth, (req, res, next) => {
     const elemento = req.body;
 
     if (!elemento.title) {
@@ -107,7 +107,7 @@ app.post(`/api/:coleccion`, /*auth,*/ (req, res, next) => {
 });
 
 // Modificamos el elemento {id} de la tabla {coleccion}
-app.put('/api/:coleccion/:id', /*auth,*/ (req, res, next) => {
+app.put('/api/:coleccion/:id', auth, (req, res, next) => {
     let elementoId = req.params.id;
     let elementoNuevo = req.body;
     req.collection.update({ _id: id(elementoId) }, { $set: elementoNuevo }, { safe: true, multi: false }, (err, elementoModif) => {
@@ -117,7 +117,7 @@ app.put('/api/:coleccion/:id', /*auth,*/ (req, res, next) => {
 });
 
 // Eliminamos el elemento {id} de la tabla {coleccion}
-app.delete('/api/:coleccion/:id', /*auth,*/ (req, res, next) => {
+app.delete('/api/:coleccion/:id', auth, (req, res, next) => {
     let elementoId = req.params.id;
 
     req.collection.remove({ _id: id(elementoId) }, (err, resultado) => {
