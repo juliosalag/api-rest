@@ -22,6 +22,9 @@ const app = express();
 var db = mongojs("SD"); // Enlazamos con la DB "SD"
 var id = mongojs.ObjectId;
 
+// Token Service
+const TokenService = require('./services/token.service');
+
 // Declaramos los middleware
 var allowMethods = (req, res, next) => {
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
@@ -36,12 +39,23 @@ var allowCrossTokenOrigin = (req, res, next) => {
     return next();
 }
 var auth = (req, res, next) => {
-    return next();
-    /*if (req.headers.token === "password1234") {
-        return next();
-    } else {
-        return next(new Error("No autorizado"));
-    }*/
+    const token = req.headers["authorization"].split(" ")[1];
+
+    TokenService.decodificaToken(token)
+        .then((usuario) => {
+            console.log(usuario);
+            req.user = {
+                id: usuario.id,
+                rol: usuario.rol
+            }
+            return next();
+        })
+        .catch((err) => {
+            res.status(400).json({
+                error: 'KO',
+                message: err
+            })
+        });
 }
 
 app.use(logger('dev'));
@@ -65,7 +79,7 @@ app.param("coleccion", (req, res, next, coleccion) => {
 // Routes //
 
 // Todas las colecciones existentes en la DB
-app.get('/api', (req, res, next) => {
+app.get('/api', auth, (req, res, next) => {
     console.log('GET /api');
     console.log(req.params);
     console.log(req.collection);
@@ -76,14 +90,14 @@ app.get('/api', (req, res, next) => {
     });
 });
 // Todos los elementos de la tabla {coleccion}
-app.get('/api/:coleccion', (req, res, next) => {
+app.get('/api/:coleccion', auth, (req, res, next) => {
     req.collection.find((err, coleccion) => {
         if (err) return next(err);
         res.json(coleccion);
     });
 });
 // El elemento {id} de la tabla {coleccion}
-app.get('/api/:coleccion/:id', (req, res, next) => {
+app.get('/api/:coleccion/:id', auth, (req, res, next) => {
     req.collection.findOne({ _id: id(req.params.id) }, (err, elemento) => {
         if (err) return next(err);
         res.json(elemento);
