@@ -36,11 +36,12 @@ var allowCrossTokenOrigin = (req, res, next) => {
     return next();
 }
 var auth = (req, res, next) => {
-    if (req.headers.token === "password1234") {
+    return next();
+    /*if (req.headers.token === "password1234") {
         return next();
     } else {
         return next(new Error("No autorizado"));
-    }
+    }*/
 }
 
 app.use(logger('dev'));
